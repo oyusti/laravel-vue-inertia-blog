@@ -71,7 +71,14 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+
+        $categories = Category::all();
+
+        return inertia('Post/Edit', [
+            'post' => $post,
+            'categories' => $categories,
+            'message' => session('swal'),
+        ]);
     }
 
     /**
@@ -79,7 +86,27 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $data = $request->validate([
+            'title' => 'required|string',
+            'slug'  => 'required|string|unique:posts,slug,' . $post->id,
+            'category_id'   =>'required|exists:categories,id',
+            'extract' => 'nullable',
+            'content' => 'nullable',
+            'is_published' => 'required|boolean'
+        ]);
+
+        $data['user_id'] = auth()->id();
+        
+        $post->update($data);
+
+        session()->flash('swal', [
+            'title' => 'Excelente',
+            'text' => 'Post actualizado satisfactoriamente',
+            'icon' => 'success',
+        ]);
+
+        return redirect()->route('admin.posts.edit', $post);
+
     }
 
     /**
