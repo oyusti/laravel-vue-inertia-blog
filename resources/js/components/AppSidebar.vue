@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, ChartBarStacked, Newspaper } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, ChartBarStacked, Newspaper, Tag } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 //import { route } from 'ziggy-js';   
 
@@ -25,6 +25,11 @@ const mainNavItems: NavItem[] = [
         href: 'admin.posts.index',
         icon: Newspaper
     },
+    {
+        title: 'Tags',
+        href: 'admin.tags.index',
+        icon: Tag
+    }
 ];
 
 const footerNavItems: NavItem[] = [

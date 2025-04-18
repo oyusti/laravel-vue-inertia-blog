@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\TagController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,6 +39,18 @@ Route::middleware(['auth', 'verified'])->controller(PostController::class)->grou
     Route::get('/posts/{post}/edit', 'edit')->name('admin.posts.edit');
     Route::put('/posts/{post}', 'update')->name('admin.posts.update');
     Route::delete('/posts/{post}', 'destroy')->name('admin.posts.destroy');
+});
+
+/**
+ * Routes for Tags
+ */
+Route::middleware(['auth', 'verified'])->controller(TagController::class)->group(function () {
+    Route::get('/tags','index')->name('admin.tags.index');
+    Route::get('/tags/create', 'create')->name('admin.tags.create');
+    Route::post('/tags', 'store')->name('admin.tags.store');
+    Route::get('/tags/{tag}/edit', 'edit')->name('admin.tags.edit');
+    Route::put('/tags/{tag}','update')->name('admin.tags.update');
+    Route::delete('/tags/{tag}', 'destroy')->name('admin.tags.destroy');
 });
 
 

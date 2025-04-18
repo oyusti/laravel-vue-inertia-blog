@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class TagController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = Category::latest()->get();
+        $tags = Tag::latest()->get();
 
-        return inertia('Category/Index', [
-            'categories' => $categories,
+        return inertia('Tag/Index', [
+            'tags' => $tags,
             'message' => session('swal'),
         ]);
     }
@@ -26,7 +26,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return inertia('Category/Create');
+        return inertia('Tag/Create');
     }
 
     /**
@@ -35,24 +35,24 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
+            'name'  => 'required|string|max:255|unique:tags',
         ]);
 
-        Category::create($request->all());
+        Tag::create($request->all());
 
         session()->flash('swal', [
             'title' => 'Excelente',
-            'text' => 'Categoria creada satisfactoriamente',
+            'text' => 'Etiqueta creada satisfactoriamente',
             'icon' => 'success',
         ]);
 
-        return redirect()->route('admin.categories.index')->with((json_encode(session('swal'))));
+        return redirect()->route('admin.tags.index')->with((json_encode(session('swal'))));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show(Tag $tag)
     {
         //
     }
@@ -60,40 +60,39 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Category $category)
+    public function edit(Tag $tag)
     {
-
-        return inertia('Category/Edit',[
-            'category'  => $category,
+        return inertia('Tag/Edit',[
+            'tag'  => $tag,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Tag $tag)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
+            'name'  => 'required|string|max:255|unique:tags,name,' . $tag->id,
         ]);
 
-        $category->update($request->all());
+        $tag->update($request->all());
 
         session()->flash('swal', [
             'title' => 'Excelente',
-            'text' => 'Categoria actualizada satisfactoriamente',
+            'text' => 'Tag actualizado satisfactoriamente',
             'icon' => 'success',
         ]);
 
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.tags.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(Tag $tag)
     {
-        $category->delete();
+        $tag->delete();
 
         session()->flash('swal', [
             'title' => 'Eliminado!',
@@ -101,14 +100,6 @@ class CategoryController extends Controller
             'icon' => 'success',
         ]);
 
-        return redirect()->route('admin.categories.index');
-
-        /* return response()->json([
-            'message' => [
-                'title' => 'Eliminado!',
-                'text' => 'Tu registro ha sido eliminado!',
-                'icon' => 'success',
-            ]
-        ]); */
+        return redirect()->route('admin.tags.index');
     }
 }

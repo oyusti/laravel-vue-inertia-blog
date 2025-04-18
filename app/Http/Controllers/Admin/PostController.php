@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -92,8 +93,22 @@ class PostController extends Controller
             'category_id'   =>'required|exists:categories,id',
             'extract' => 'nullable',
             'content' => 'nullable',
+            'image' => 'nullable|image',
             'is_published' => 'required|boolean'
         ]);
+
+        //Si en el $request viene el campo imagen entonces lo guardamos en el post
+        if($request->hasFile('image')){
+            
+            // Obtener la ruta RELATIVA original almacenada en la BD
+            $oldImagePath = $post->getRawOriginal('image_path');
+
+            if($oldImagePath){
+                Storage::delete($oldImagePath);
+            }
+
+            $data['image_path'] = Storage::put('posts',$request->image);
+        }
 
         $data['user_id'] = auth()->id();
         

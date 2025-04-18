@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem, Category, Message } from '@/types';
+import { type BreadcrumbItem, Tag, Message } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Table, TableCaption, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
@@ -12,19 +12,19 @@ import Swal from 'sweetalert2';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Categorias',
+        title: 'Tags',
         href: '',
     },
 ];
 
 const props = defineProps<{
-    categories: Category;
+    tags: Tag;
     message?: Message | null;
 }>();
 
 /* const page = usePage; */
 
-const deleteCategory = (id: number) => {
+const deleteTag = (id: number) => {
     Swal.fire({
         title: "Esta usted seguro?",
         text: "No pude revertir esto!",
@@ -35,7 +35,7 @@ const deleteCategory = (id: number) => {
         confirmButtonText: "Si, eliminarlo!",
         }).then((result) => {
         if (result.isConfirmed) {
-            router.delete(route('admin.categories.destroy', { id }), {
+            router.delete(route('admin.tags.destroy', { id }), {
                 preserveScroll: true,
                 onError: (errors: any) => {
                     console.log(errors);
@@ -64,11 +64,11 @@ watch(
 </script>
 
 <template>
-    <Head title="Categorias" />
+    <Head title="Tags" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex justify-end w-full gap-4">
-                    <Link :href="route('admin.categories.create')">
+                    <Link :href="route('admin.tags.create')">
                         <Button class="bg-blue-500">
                             Nuevo
                         </Button>
@@ -96,16 +96,16 @@ watch(
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="category in categories" :key="category.id">
-                            <TableCell class="font-medium">{{ category.name }}</TableCell>
+                        <TableRow v-for="tag in tags" :key="tag.id">
+                            <TableCell class="font-medium">{{ tag.name }}</TableCell>
                             <TableCell>
                                 <div class="flex gap-2">
-                                    <Link :href="route('admin.categories.edit', { category: category.id })">
+                                    <Link :href="route('admin.tags.edit', { tag: tag.id })">
                                         <Button class="bg-blue-500">      
                                             <Pencil/>
                                         </Button>
                                     </Link>
-                                    <Button @click="deleteCategory(category.id)" class="bg-red-500">
+                                    <Button @click="deleteTag(tag.id)" class="bg-red-500">
                                         <Trash2/>
                                     </Button>
                                 </div>
