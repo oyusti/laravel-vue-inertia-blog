@@ -9,7 +9,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Categorias',
-        href: '/categories',
+        href: '/admin/categories',
     },
     {
         title: 'Editar',

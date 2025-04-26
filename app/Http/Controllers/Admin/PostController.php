@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -73,11 +74,15 @@ class PostController extends Controller
     public function edit(Post $post)
     {
 
+        $post->load('tags');
+
         $categories = Category::all();
+        $tags = Tag::all();
 
         return inertia('Post/Edit', [
             'post' => $post,
             'categories' => $categories,
+            'tags' => $tags,
             'message' => session('swal'),
         ]);
     }
@@ -87,6 +92,7 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+
         $data = $request->validate([
             'title' => 'required|string',
             'slug'  => 'required|string|unique:posts,slug,' . $post->id,
@@ -94,8 +100,14 @@ class PostController extends Controller
             'extract' => 'nullable',
             'content' => 'nullable',
             'image' => 'nullable|image',
-            'is_published' => 'required|boolean'
+            'is_published' => 'required|boolean',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id'
         ]);
+
+        if($request->is_published && !$post->published_at){
+            $data['published_at'] = now();
+        }
 
         //Si en el $request viene el campo imagen entonces lo guardamos en el post
         if($request->hasFile('image')){
@@ -114,6 +126,8 @@ class PostController extends Controller
         
         $post->update($data);
 
+        $post->tags()->sync($data['tags'] ?? []);
+
         session()->flash('swal', [
             'title' => 'Excelente',
             'text' => 'Post actualizado satisfactoriamente',
@@ -129,6 +143,18 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        if($post->getRawOriginal('image_path')){
+            Storage::delete($post->getRawOriginal('image_path'));
+        }
+
+        $post->delete();
+
+        session()->flash('swal', [
+            'title' => 'Eliminado!',
+            'text' => 'Tu registro ha sido eliminado!',
+            'icon' => 'success',
+        ]);
+
+        return redirect()->route('admin.posts.index');
     }
 }

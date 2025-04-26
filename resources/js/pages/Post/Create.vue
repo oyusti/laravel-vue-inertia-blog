@@ -12,7 +12,7 @@ import { watch } from 'vue';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Posts',
-        href: '/posts',
+        href: '/admin/posts',
     },
     {
         title: 'Crear',

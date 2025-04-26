@@ -1,4 +1,15 @@
 <script setup lang="ts">
+    import PublicLayout from '@/layouts/app/AppHeaderLayout.vue';
+    import { Head } from '@inertiajs/vue3';
+
+</script>
+
+<template>
+    <Head title="Posts" />
+    <PublicLayout></PublicLayout>
+</template>
+
+<!-- <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 </script>
 
@@ -784,4 +795,4 @@ import { Head, Link } from '@inertiajs/vue3';
         </div>
         <div class="h-14.5 hidden lg:block"></div>
     </div>
-</template>
+</template> -->

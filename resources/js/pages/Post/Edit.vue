@@ -5,18 +5,22 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectLabel} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea'
-import { BreadcrumbItem, Category,Post, Message} from '@/types';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { defineProps } from 'vue';
+import { BreadcrumbItem, Category,Post, Message, Tag} from '@/types';
 import { Head, useForm} from '@inertiajs/vue3';
-import { ref,watch } from 'vue';
+import { ref, watch, toRaw, onMounted } from 'vue';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 import Swal from 'sweetalert2';
-/* import { Plus } from 'lucide-vue-next'; */
 
+let quillInstance: Quill | null = null;
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Posts',
-        href: '/posts',
+        href: '/admin/posts',
     },
     {
         title: 'Crear',
@@ -28,6 +32,7 @@ const props = defineProps<{
     categories: Category;
     message?: Message | null;
     post: Post;
+    tags: Tag[]; // Assuming this holds ALL available tags and should be an array
 }>();
 
 const form = useForm({
@@ -39,12 +44,55 @@ const form = useForm({
     content: props.post.content,
     image: null as File | null, // Inicializa como null, ya que el input espera un File
     is_published: props.post.is_published,
+    tags: props.post.tags?.map(tag => tag.id.toString()) || [], // Extrae solo los IDs
+    
 });
 
 // Variable reactiva para la URL de la imagen a mostrar (existente o previsualización)
 const imagePreviewUrl = ref<string | null>(props.post.image_path || null); // Usa la imagen existente si hay
 
-{{console.log(imagePreviewUrl.value)}}
+// --- ¡Inicializa Quill cuando el componente esté montado! ---
+onMounted(() => {
+    const editorElement = document.querySelector('#editor'); // Busca el elemento
+
+    if (editorElement) { // Asegúrate que el elemento exista
+        quillInstance = new Quill(editorElement, {
+            theme: 'snow', // Elige tu tema (snow o bubble)
+            modules: {
+                toolbar: [ // Configura tu barra de herramientas
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'direction': 'rtl' }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'font': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image', 'video'], // Añade opciones de medios si las necesitas
+                    ['clean'] // Botón para limpiar formato
+                ]
+            },
+            placeholder: 'Escribe el contenido aquí...',
+        });
+
+        // Establece el contenido inicial del editor desde form.content
+        if (form.content) {
+            quillInstance.root.innerHTML = form.content;
+        }
+
+        // Escucha cambios en el editor y actualiza form.content
+        quillInstance.on('text-change', () => {
+            // Actualiza form.content con el HTML del editor
+            // Usa optional chaining (?) por si acaso la instancia no está lista
+            form.content = quillInstance?.root.innerHTML || '';
+        });
+
+    } else {
+        console.error("Elemento #editor no encontrado en el DOM para inicializar Quill.");
+    }
+});
 
 // Watch for changes in the title and update the slug accordingly
 watch(() => form.title, (newTitle) => {
@@ -98,29 +146,17 @@ const handleFileChange = (event: Event) => {
             //imagePreviewUrl.value = e.target?.result as string;
             imagePreviewUrl.value = URL.createObjectURL(file);
         };
-        reader.readAsDataURL(file); // Puedes usar readAsDataURL para obtener un base64
-        // O usar URL.createObjectURL(file) para obtener un blob URL (más eficiente)
-        // if (imagePreviewUrl.value && imagePreviewUrl.value.startsWith('blob:')) {
-        //     URL.revokeObjectURL(imagePreviewUrl.value);
-        // }
-        // imagePreviewUrl.value = URL.createObjectURL(file);
-
+        reader.readAsDataURL(file); 
     } else {
         // Opcional: manejar el caso donde se cancela la selección
         form.image = null;
-        // Opcional: volver a la imagen original si se cancela
-        // imagePreviewUrl.value = props.post.image_path || null;
     }
 };
-
-console.log(imagePreviewUrl.value)
 
 // Función de envío (ajustada para usar post debido a _method)
 const submit = () => {
     // Inertia maneja automáticamente _method: 'PUT' con una petición POST
     form.post(route('admin.posts.update', { post: props.post.id }), {
-        // Opcional: forzar multipart/form-data si Inertia no lo detecta automáticamente
-        // forceFormData: true,
         onSuccess: () => {
             // Acciones post-éxito si es necesario
         },
@@ -130,6 +166,32 @@ const submit = () => {
         }
     });
 };
+
+const handleTagToggle = (tagIdAsString: string, isChecked: boolean) => {
+    
+    // Obtén una referencia al array actual (¡importante!)
+    const currentTags = form.tags; 
+
+    if (isChecked) {
+        // Añadir el ID (string) si NO está ya presente
+        if (!currentTags.includes(tagIdAsString)) {
+            // ¡Muta el array directamente! No hagas form.tags = [...], eso rompe la reactividad de useForm
+            currentTags.push(tagIdAsString); 
+        }
+    } else {
+        // Quitar el ID (string) si está presente
+        const index = currentTags.indexOf(tagIdAsString);
+        if (index > -1) {
+            // ¡Muta el array directamente!
+            currentTags.splice(index, 1); 
+        }
+    }
+};
+
+// Opcional: Watch para depurar el array de tags mientras seleccionas
+watch(() => form.tags, (newTags) => {
+    console.log('IDs de Tags seleccionados:', toRaw(newTags));
+}, { deep: true }); // deep: true por si acaso, aunque no debería ser necesario para un array de primitivos
 
 </script>
 
@@ -195,15 +257,34 @@ const submit = () => {
                     <Textarea id="extract" v-model="form.extract">{{ form.extract }}</Textarea>
 
 
-                    <Label for="content">Contenido:</Label>
-                    <Textarea id="content" v-model="form.content" rows="20">{{ form.content }}</Textarea>
-
-                    <div class="space-x-2">
-                        <Switch v-if="form.is_published" id="is_published" v-model="form.is_published" value="true" />
-                        <Switch v-else id="is_published" v-model="form.is_published" value="false" />
-                        <Label for="is_published">Publicado</Label>
-                    </div>
                     
+                    <Label for="editor">Contenido:</Label>
+
+                    <div id="editor" style="min-height: 250px;">
+                        <!-- El contenido se cargará aquí dinámicamente -->
+                    </div>
+
+                    <div>
+                        <Label>Etiquetas:</Label>
+                        <div v-for="tag in tags" :key="tag.id" class="flex items-center space-x-2 py-1">
+                            <Checkbox 
+                                :id="'tag-checkbox-' + tag.id"
+                                :value="tag.id.toString()"  
+                                :checked="form.tags.includes(tag.id.toString())"
+                                @update:checked="(isChecked) => handleTagToggle(tag.id.toString(), isChecked)"                 
+                            />
+                            <Label :for="'tag-checkbox-' + tag.id">{{ tag.name }}</Label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <Label>Estado:</Label>
+                        <div class="space-x-2">
+                            <Switch v-if="form.is_published" id="is_published" v-model="form.is_published" value="true" />
+                            <Switch v-else id="is_published" v-model="form.is_published" value="false" />
+                            <Label for="is_published">Publicado</Label>
+                        </div>
+                    </div>
 
                     <div class="flex justify-end w-full gap-4">
                         <Button type="submit" :disabled="form.processing" class="bg-blue-500 hover:bg-blue-600">
