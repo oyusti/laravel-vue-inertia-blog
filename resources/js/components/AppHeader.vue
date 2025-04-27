@@ -40,7 +40,7 @@ const activeItemStyles = computed(() => (url: string) => (isCurrentRoute(url) ? 
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Home',
+        title: 'Blog',
         href: '/',
         icon: LayoutGrid,
     },

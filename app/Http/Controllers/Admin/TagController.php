@@ -15,7 +15,7 @@ class TagController extends Controller
     {
         $tags = Tag::latest()->get();
 
-        return inertia('Tag/Index', [
+        return inertia('admin/Tag/Index', [
             'tags' => $tags,
             'message' => session('swal'),
         ]);
@@ -26,7 +26,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        return inertia('Tag/Create');
+        return inertia('admin/Tag/Create');
     }
 
     /**
@@ -62,7 +62,7 @@ class TagController extends Controller
      */
     public function edit(Tag $tag)
     {
-        return inertia('Tag/Edit',[
+        return inertia('admin/Tag/Edit',[
             'tag'  => $tag,
         ]);
     }

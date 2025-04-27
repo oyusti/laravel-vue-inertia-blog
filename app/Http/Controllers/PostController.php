@@ -14,14 +14,11 @@ class PostController extends Controller
     {
         $posts = Post::where('is_published', true)
                     ->orderBy('published_at', 'desc')
-                    ->paginate()
-                    ->get();
+                    ->paginate(9);
 
-        return $posts;
-
-        /* return inertia('Post/Index', [
+        return inertia('posts/Index', [
             'posts' => $posts,
-        ]); */
+        ]);
     }
 
     /**
@@ -45,7 +42,9 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        return inertia('posts/Show', [
+            'post' => $post,
+        ]);
     }
 
     /**

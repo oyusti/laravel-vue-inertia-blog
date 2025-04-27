@@ -4,11 +4,11 @@ use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/',function () { 
+/* Route::get('/',function () { 
     return Inertia::render('Welcome');
-})->name('home');
+})->name('home'); */
 
-//Route::redirect('/', '/posts')->name('home');
+Route::redirect('/', '/posts')->name('home');
 
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{slug}', [PostController::class, 'show'])->name('posts.show');

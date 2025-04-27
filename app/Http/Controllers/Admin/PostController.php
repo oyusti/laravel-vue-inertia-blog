@@ -18,7 +18,7 @@ class PostController extends Controller
     {
         $posts = Post::latest()->with('user','category')->get();
 
-        return inertia('Post/Index', [
+        return inertia('admin/Post/Index', [
             'posts' => $posts,
             'message' => session('swal'),
         ]);
@@ -31,7 +31,7 @@ class PostController extends Controller
     {
         $categories = Category::all();
         
-        return inertia('Post/Create',[
+        return inertia('admin/Post/Create',[
             'categories' => $categories,
         ]);
     }
@@ -79,7 +79,7 @@ class PostController extends Controller
         $categories = Category::all();
         $tags = Tag::all();
 
-        return inertia('Post/Edit', [
+        return inertia('admin/Post/Edit', [
             'post' => $post,
             'categories' => $categories,
             'tags' => $tags,

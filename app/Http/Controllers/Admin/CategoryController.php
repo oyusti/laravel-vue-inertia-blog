@@ -15,7 +15,7 @@ class CategoryController extends Controller
     {
         $categories = Category::latest()->get();
 
-        return inertia('Category/Index', [
+        return inertia('admin/Category/Index', [
             'categories' => $categories,
             'message' => session('swal'),
         ]);
@@ -26,7 +26,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return inertia('Category/Create');
+        return inertia('admin/Category/Create');
     }
 
     /**
@@ -63,7 +63,7 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
 
-        return inertia('Category/Edit',[
+        return inertia('admin/Category/Edit',[
             'category'  => $category,
         ]);
     }
