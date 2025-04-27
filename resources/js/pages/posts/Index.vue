@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import PublicLayout from '@/layouts/app/AppHeaderLayout.vue';
-import { type BreadcrumbItem, Post, Message } from '@/types';
+import { type BreadcrumbItem, Post, LaravelPaginator  } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 
 
 const props = defineProps<{
-    posts: { // Asumiendo que posts es un objeto de paginación de Laravel
-    data: Post[];
-    // Podrías tener más propiedades de paginación aquí (links, current_page, etc.)
-    };
-    message?: Message | null;
+    posts: LaravelPaginator<Post>
 }>();
 
 // Función simple para crear un extracto (opcional)
@@ -76,5 +72,35 @@ const createExcerpt = (content: string, length = 100): string => {
                 </div>
             </div>
         </div>
+
+        <!-- Sección de Paginación -->
+        <div v-if="posts.links && posts.links.length > posts.per_page" class="mt-6 mb-4 flex justify-center items-center space-x-1 px-4">
+            <!-- Iteramos sobre los links de paginación -->
+            <template v-for="(link, index) in posts.links" :key="index">
+                <!-- Link Deshabilitado (sin URL, ej. '...' o Prev/Next en extremos) -->
+                <span
+                    v-if="link.url === null"
+                    class="px-3 py-2 text-sm text-gray-400 border rounded cursor-default"
+                    v-html="link.label"
+                />
+                <!-- Link Activo (página actual) -->
+                <Link
+                    v-else-if="link.active"
+                    :href="link.url"
+                    class="px-3 py-2 text-sm font-bold text-white bg-indigo-600 border border-indigo-600 rounded hover:bg-indigo-700"
+                    preserve-scroll
+                    v-html="link.label"
+                />
+                <!-- Link Normal -->
+                <Link
+                    v-else
+                    :href="link.url"
+                    class="px-3 py-2 text-sm text-indigo-600 border rounded hover:bg-gray-100 hover:text-indigo-800"
+                    preserve-scroll
+                    v-html="link.label"
+                />
+            </template>
+        </div>
+        <!-- Fin Sección de Paginación -->
     </PublicLayout>
 </template>

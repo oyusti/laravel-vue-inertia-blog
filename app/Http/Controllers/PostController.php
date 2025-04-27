@@ -17,7 +17,7 @@ class PostController extends Controller
                     ->paginate(9);
 
         return inertia('posts/Index', [
-            'posts' => $posts,
+            'posts' => $posts
         ]);
     }
 
@@ -42,6 +42,9 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+
+        $post->load(['user', 'category', 'tags']);
+
         return inertia('posts/Show', [
             'post' => $post,
         ]);

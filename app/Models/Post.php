@@ -73,10 +73,10 @@ class Post extends Model
     protected $appends = ['image_path']; // ¡Importante!
 
     //Route Model Binding
-    /* public function getRouteKeyName()
+    public function getRouteKeyName()
     {
         return 'slug';
-    } */
+    }
 
     //relationship inverse with user
     public function user(){
