@@ -2,10 +2,10 @@
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, ChartBarStacked, Newspaper, Tag } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, ChartBarStacked, Newspaper, Tag, KeyRound  } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 //import { route } from 'ziggy-js';   
 
@@ -29,6 +29,11 @@ const mainNavItems: NavItem[] = [
         title: 'Tags',
         href: 'admin.tags.index',
         icon: Tag
+    },
+    {
+        title: 'Permisos',
+        href: 'admin.permissions.index',
+        icon: KeyRound
     }
 ];
 
