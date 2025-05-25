@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, ChartBarStacked, Newspaper, Tag, KeyRound  } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, ChartBarStacked, Newspaper, Tag, KeyRound, LockKeyholeOpen  } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 //import { route } from 'ziggy-js';   
 
@@ -34,7 +34,12 @@ const mainNavItems: NavItem[] = [
         title: 'Permisos',
         href: 'admin.permissions.index',
         icon: KeyRound
-    }
+    },
+    {
+        title: 'Roles',
+        href: 'admin.roles.index',
+        icon: LockKeyholeOpen
+    },
 ];
 
 const footerNavItems: NavItem[] = [

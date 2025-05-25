@@ -9,6 +9,7 @@ use App\Models\Tag;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -29,7 +30,8 @@ class DatabaseSeeder extends Seeder
         Post::factory(100)->create();
         Tag::factory(10)->create();
         $this->call([
-            PermissionSeeder::class
+            PermissionSeeder::class,
+            RoleSeeder::class
         ]);
     }
 }

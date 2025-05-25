@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-vue-next';
 import type { PageProps } from '@inertiajs/core';
+import type { FormDataConvertible } from '@inertiajs/vue3';
 
 export interface Auth {
     user: User;
@@ -86,6 +87,20 @@ export interface PaginationLink {
   }
 
   export interface Permission{
+    id:number;
     name:string;
     guard_name:string;
   }
+
+  export interface Role{
+    id:number;
+    name:string;
+    guard_name:string;
+    permissions?: Permission[];
+  }
+
+  export interface CreateRoleForm {
+    name: string;
+    permissions: number[]; // Aquí especificamos que 'permissions' es un array de strings
+    [key: string]: FormDataConvertible;
+}
